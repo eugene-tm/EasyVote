@@ -1,0 +1,38 @@
+﻿@model DataArrayModel
+
+@{
+	int playerNumber = 1;
+	int arrayIndex = 0;
+}
+
+<div class="d-flex flex-column align-items-center">
+
+	<div class="m-3" id="playerContainer">
+		<h3>
+			Player @playerNumber's Turn. Vote!
+		</h3>
+	</div>
+
+	<div class="w-25" id="catFactContainer">
+		@Model.DataArray[Model.ArrayIndex].ItemData
+	</div>
+
+
+<div class="w-40 mt-5">
+	<button id="btnHate" data-index="@arrayIndex" data-vote="hate" class="btn btn-danger">I Hate It</button>
+	<button id="btnOkay" data-index="@arrayIndex" data-vote="okay" class="btn btn-warning">It's Okay</button>
+	<button id="btnLike" data-index="@arrayIndex" data-vote="like" class="btn btn-success">I Like It</button>
+	<button id="btnLove" data-index="@arrayIndex" data-vote="love" class="btn btn-info">I Love It</button>
+</div>
+
+
+	<div>
+		</br>
+		</br>
+		</br>
+		</br>
+
+		<button id="btnReset" class="btn btn-sm btn-outline-dark">Back To Start</button>
+	</div>
+
+</div>

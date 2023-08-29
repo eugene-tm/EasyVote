@@ -1,0 +1,295 @@
+﻿@model DataArrayModel
+
+@{
+	ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+	<h1 class="mt-3 display-4">EasyVote</h1>
+	<h5>Voting as a group - made easy</h5>
+</div>
+
+<div id="HomeContainer">
+	<partial name="_Home.cshtml" />
+</div>
+
+<div class="modal" id="SpinnerModal" tabindex="-1" data-bs-backdrop="false">
+	<div class="modal-dialog modal-dialog-centered d-flex justify-content-center">
+		<div class="spinner">
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+	</div>
+</div>
+
+<script>
+
+	/* GLOBAL VARIABLES */
+
+	const slider1 = document.getElementById('customRange1');
+	const slider2 = document.getElementById('customRange2');
+
+	const sliderValue1 = document.getElementById('sliderValue1');
+	const sliderValue2 = document.getElementById('sliderValue2');
+
+	const btnStart = document.getElementById('btnStart');
+	const container = document.getElementById('HomeContainer');
+
+	const btnReset = document.getElementById('btnReset');
+
+	const catFactContainer = document.getElementById('catFactContainer');
+
+	const dataArray = [];
+
+	let dataSize = 0;
+
+	let playerCountLimit = 0;
+
+	let playerCounter = 1;
+
+	let arrayIndex = 0;
+
+
+	/* FIRST PAGE FUNCTIONALITY */
+
+	// Function to update slider thumb position and displayed value
+	function updateSlider1Position(value) {
+		slider1.value = value;
+		sliderValue1.textContent = value;
+	}
+
+	function updateSlider2Position(value) {
+		slider2.value = value;
+		sliderValue2.textContent = value;
+	}
+
+	// Set the initial displayed value and slider thumb position
+	updateSlider1Position(2);
+	updateSlider2Position(5);
+
+	// Update the displayed value and slider thumb position when the slider is moved
+	slider1.addEventListener('input', function () {
+		sliderValue1.textContent = this.value;
+	});
+
+	// Update the displayed value and slider thumb position when the slider is moved
+	slider2.addEventListener('input', function () {
+		sliderValue2.textContent = this.value;
+	});
+
+
+
+
+	btnStart.addEventListener('click', async function () {
+		showSpinner();
+
+		const numberOfVoters = slider1.value;
+		const numberOfItems = slider2.value;
+
+		dataSize = numberOfItems;
+		playerCountLimit = numberOfVoters;
+
+		const selectedTopic = document.querySelector('#selectTopic').value;
+
+		try {
+			// goes to the controller and returns HTML to render the page
+			const response = await fetch(`/Home/SecondPage?topic=${selectedTopic}&itemCount=${numberOfItems}`);
+			const partialViewContent = await response.text();
+
+			// Set the response content as HTML of the container
+			container.innerHTML = partialViewContent;
+
+			updatePlayerCount();
+
+			arrayIndex = 0;
+			hideSpinner();
+		}
+		catch (error) {
+			console.error('Error loading partial view:', error);
+		}
+	});
+
+
+	/* VOTING BUTTON EVENT LISTENERS AND FUNCTIONS */
+
+
+	// Event listener using event delegation
+	container.addEventListener('click', async function (event) {
+		const target = event.target;
+
+		if (target && target.matches('.btn')) {
+			if (target.id === 'btnHate') {
+				updateScore(arrayIndex, -1);
+			}
+			if (target.id === 'btnOkay') {
+				updateScore(arrayIndex, 0);
+			}
+			if (target.id === 'btnLike') {
+				updateScore(arrayIndex, 1);
+			}
+			if (target.id === 'btnLove') {
+				updateScore(arrayIndex, 2);
+			}
+			if (target.id === 'btnReset') {
+				location.reload();
+			}
+		}
+	});
+
+
+
+	async function updateScore(dataIndex, scoreChange) {
+		try {
+
+			// goes to the controller and updates the score of the item
+			const response = await fetch(`/Home/UpdateScore?dataIndex=${dataIndex}&scoreChange=${scoreChange}`);
+			const updatedData = await response.json();
+
+			// logs changes
+			console.log(`current index: ${arrayIndex}`)
+			// creates a var for the container
+			let catFactContainer = document.getElementById('catFactContainer');
+
+			getFullList();
+
+
+
+			// IF ELSE statement increments the array index safely to avoid out of bounds exceptions
+			if (arrayIndex < dataSize - 1) {
+
+				// Gets the next item in line
+				const newItemData = await getItemAtIndex(arrayIndex + 1);
+
+				// Sets the value of the container to the new data
+				catFactContainer.innerHTML = newItemData.itemData;
+
+
+				// increments the array
+				arrayIndex++;
+				console.log('inc to ' + arrayIndex + '. datasize limit: ' + dataSize);
+			}
+			else {
+				if (playerCounter < playerCountLimit) {
+					arrayIndex = 0;
+					playerCounter++;
+					updatePlayerCount()
+
+					let resetData = await getItemAtIndex(0);
+					catFactContainer.innerHTML = resetData.itemData;
+				}
+				else {
+					loadResultsPage();
+				}
+			}
+		}
+
+		catch (error) {
+			console.error('Error updating score:', error);
+		}
+	}
+
+	// returns the entire dataset --> for debugging
+	async function getFullList() {
+		const response = await fetch(`/Home/GetFullList`);
+		const jsonResponse = await response.json();
+
+		console.log(jsonResponse);
+	}
+
+
+	async function getItemAtIndex(index) {
+		try {
+			const response = await fetch(`/Home/GetItemAtIndex?index=${index}`);
+			const jsonResponse = await response.json();
+			return jsonResponse;
+		} catch (error) {
+			console.error('Error collecting data:', error);
+			throw error; 
+		}
+	}
+
+	async function getHighestScoresByIndex(index) {
+		try {
+			const response = await fetch(`/Home/GetHighestScoresByIndex?index=${index}`)
+			const jsonResponse = await response.json();
+			return jsonResponse;
+		}
+		catch (error) {
+			console.error('Error retrieving data:', error);
+			throw error;
+		}
+	}
+
+
+
+	function updatePlayerCount() {
+		// update the player turn heading
+		let playerContainer = document.getElementById('playerContainer');
+		playerContainer.innerHTML = `<h3>Player ${playerCounter}'s Turn. Vote!</h3>`;
+	}
+
+	async function loadResultsPage() {
+
+		// goes to the controller and returns HTML to render the page
+		const response = await fetch(`/Home/ResultsPage`);
+		const partialViewContent = await response.text();
+
+		// Set the response content as HTML of the container
+		container.innerHTML = partialViewContent;
+
+		//  FIRST RESULT / WINNER
+		let firstContainer = document.getElementById('firstResultContainer');
+
+		let firstResult = await getHighestScoresByIndex(0);
+
+		firstContainer.innerHTML = `<h3 class ="display-4"><b>${firstResult.itemData}</b></h3>`
+
+
+		//  SECOND RESULT / Runner Up
+		let secondContainer = document.getElementById('secondResultContainer');
+
+		let secondResult = await getHighestScoresByIndex(1);
+
+		secondContainer.innerHTML = `<h2>${secondResult.itemData}</h2>`
+
+
+		//  Third RESULT / Bronze Medal
+		let thirdContainer = document.getElementById('thirdResultContainer');
+
+		let thirdResult = await getHighestScoresByIndex(2);
+
+		thirdContainer.innerHTML = `<h3>${thirdResult.itemData}</h3>`
+
+
+		//  OTHER RESULTS
+		let otherContainer = document.getElementById('otherResultContainer');
+
+		let otherResult = await getHighestScoresByIndex(3);
+
+		otherContainer.innerHTML = `<h3>${otherResult.itemData}</h3>`
+
+	}
+
+
+
+
+	// MODALS
+
+	function showSpinner() {
+		$('#SpinnerModal').modal('show')
+	}
+
+	function hideSpinner() {
+		$('#SpinnerModal').modal('hide')
+	}
+
+</script>
