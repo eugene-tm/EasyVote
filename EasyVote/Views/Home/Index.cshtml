@@ -13,6 +13,9 @@
 	<partial name="_Home.cshtml" />
 </div>
 
+<!-- MODALS START -->
+
+<!-- Spinner Modal-->
 <div class="modal" id="SpinnerModal" tabindex="-1" data-bs-backdrop="false">
 	<div class="modal-dialog modal-dialog-centered d-flex justify-content-center">
 		<div class="spinner">
@@ -30,6 +33,26 @@
 
 	</div>
 </div>
+
+<!-- Next player modal -->
+<div class="modal" id="NextPlayerModal" tabindex="-1">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Next Player!</h5>
+			</div>
+			<div class="modal-body">
+				<p>Player # has finished voting. Player # press start when ready!</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-outline-light" data-bs-dismiss="modal">Start</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- MODALS END-->
 
 <script>
 
@@ -59,7 +82,6 @@
 	let arrayIndex = 0;
 
 
-	/* FIRST PAGE FUNCTIONALITY */
 
 	// Function to update slider thumb position and displayed value
 	function updateSlider1Position(value) {
@@ -128,6 +150,7 @@
 
 		if (target && target.matches('.btn')) {
 			if (target.id === 'btnHate') {
+				console.log('btn');
 				updateScore(arrayIndex, -1);
 			}
 			if (target.id === 'btnOkay') {
@@ -179,6 +202,7 @@
 			}
 			else {
 				if (playerCounter < playerCountLimit) {
+					showNextPlayerModal();
 					arrayIndex = 0;
 					playerCounter++;
 					updatePlayerCount()
@@ -251,7 +275,7 @@
 
 		let firstResult = await getHighestScoresByIndex(0);
 
-		firstContainer.innerHTML = `<h3 class ="display-4"><b>${firstResult.itemData}</b></h3>`
+		firstContainer.innerHTML = `<h3><b>${firstResult.itemData}</b></h3>`
 
 
 		//  SECOND RESULT / Runner Up
@@ -259,7 +283,7 @@
 
 		let secondResult = await getHighestScoresByIndex(1);
 
-		secondContainer.innerHTML = `<h2>${secondResult.itemData}</h2>`
+		secondContainer.innerHTML = `<h4>${secondResult.itemData}</h4>`
 
 
 		//  Third RESULT / Bronze Medal
@@ -267,7 +291,7 @@
 
 		let thirdResult = await getHighestScoresByIndex(2);
 
-		thirdContainer.innerHTML = `<h3>${thirdResult.itemData}</h3>`
+		thirdContainer.innerHTML = `<h4>${thirdResult.itemData}</h4>`
 
 
 		//  OTHER RESULTS
@@ -291,5 +315,11 @@
 	function hideSpinner() {
 		$('#SpinnerModal').modal('hide')
 	}
+
+	function showNextPlayerModal() {
+		$('#NextPlayerModal').modal('show')
+	}
+
+
 
 </script>

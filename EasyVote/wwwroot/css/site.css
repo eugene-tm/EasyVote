@@ -25,7 +25,6 @@ h1 {
 h5 {
     margin-bottom: 60px;
     font-family: 'Carter One';
-    background: var(--color-1);
 }
 
 body {
@@ -34,11 +33,16 @@ body {
     background: var(--color-1);
 }
 
+/*:root {*/
+    /*This is the background color of the site*/
+    /*--color-1: linear-gradient(45deg, #bdc2c7, #d9d9d9, #ebebeb);*/ /* Background color - green blue*/
+/*}*/
 
 
-/* THIS SPINNER CSS IS BY @PriyanshuGupta28 ON UIVERSE.IO */
 
-.spinner {
+    /* THIS SPINNER CSS IS BY @PriyanshuGupta28 ON UIVERSE.IO */
+
+    .spinner {
     position: absolute;
     width: 9px;
     height: 9px;
@@ -122,3 +126,73 @@ body {
         transform: rotate(calc(var(--rotation) * 1deg)) translate(0, calc(var(--translation) * 1.5%));
     }
 }
+
+
+button {
+    align-items: center;
+    background-image: linear-gradient(144deg,#AF40FF, #5B42F3 50%,#00DDEB);
+    border: 0;
+    border-radius: 8px;
+    box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    display: flex;
+    font-family: 'Alice';
+    font-size: 18px;
+    justify-content: center;
+    line-height: 1em;
+    max-width: 100%;
+    min-width: 140px;
+    padding: 3px;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all .3s;
+}
+
+/* Hate - Orangey Red Pastel Gradient */
+#btnHate {
+    background-image: linear-gradient(144deg, #FF6B4F, #FF4733 50%, #FF331A);
+}
+
+/* Okay - Indian Yellow Gradient */
+#btnOkay {
+    background-image: linear-gradient(144deg, #E3C642, #D9B926 50%, #CCB019);
+}
+
+/* Like - Olivey Light Green Gradient */
+#btnLike {
+    background-image: linear-gradient(144deg, #AACD6E, #92AF55 50%, #7D9D45);
+}
+
+/* Love - Bluey Purpley Gradient */
+#btnLove {
+    background-image: linear-gradient(144deg, #6D8DCB, #5C76AE 50%, #4A6595);
+}
+
+
+
+    button:active,
+    button:hover {
+        outline: 0;
+    }
+
+    button span {
+        background-color: rgb(5, 6, 45);
+        padding: 16px 24px;
+        border-radius: 6px;
+        width: 100%;
+        height: 100%;
+        transition: 300ms;
+    }
+
+    button:hover span {
+        background: none;
+    }
+
+    button:active {
+        transform: scale(0.9);
+    }
