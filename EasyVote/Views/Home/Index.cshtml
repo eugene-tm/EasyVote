@@ -45,7 +45,31 @@
 				<p>Player # has finished voting. Player # press start when ready!</p>
 			</div>
 			<div class="modal-footer">
-				<button class="btn btn-outline-light" data-bs-dismiss="modal">Start</button>
+				<button class="" data-bs-dismiss="modal">Start</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- About modal -->
+<div class="modal" id="AboutModal" tabindex="-1">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">About This App</h5>
+			</div>
+			<div class="modal-body">
+				<p>
+					EasyVote is a personal development project created by me (Eugene Moore).
+					This app is designed to be used in groups of two or more people, to aid in the process of choosing between options of a selected topic.
+
+					For example, helping a group of people determine which bar / restaurant is the favourite of the group, or which baby names are best preferred 
+					by a couple. 
+
+					</p>
+			</div>
+			<div class="modal-footer">
+				<button class="" data-bs-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
@@ -81,6 +105,12 @@
 
 	let arrayIndex = 0;
 
+	let btnHate;
+	let btnOkay;
+	let btnLike;
+	let btnLove;
+
+	let btnAbout;
 
 
 	// Function to update slider thumb position and displayed value
@@ -108,7 +138,12 @@
 		sliderValue2.textContent = this.value;
 	});
 
+	btnAbout = document.getElementById('btnAbout');
 
+	btnAbout.addEventListener('click', function() {
+		console.log('clicked');
+		showAboutModal();
+	});
 
 
 	btnStart.addEventListener('click', async function () {
@@ -125,6 +160,14 @@
 		try {
 			// goes to the controller and returns HTML to render the page
 			const response = await fetch(`/Home/SecondPage?topic=${selectedTopic}&itemCount=${numberOfItems}`);
+
+			if (response.status !== 200)
+			{
+				alert('This API is currently not working. Please select another topic. ');
+				location.reload();
+				return;
+			}
+
 			const partialViewContent = await response.text();
 
 			// Set the response content as HTML of the container
@@ -133,6 +176,18 @@
 			updatePlayerCount();
 
 			arrayIndex = 0;
+
+			btnHate = document.getElementById('btnHate');
+			btnOkay = document.getElementById('btnOkay');
+			btnLike = document.getElementById('btnLike');
+			btnLove = document.getElementById('btnLove');
+
+			console.log(btnAbout);
+
+			attachEventListenersToButtons();
+
+			console.log(btnHate);
+
 			hideSpinner();
 		}
 		catch (error) {
@@ -144,29 +199,35 @@
 	/* VOTING BUTTON EVENT LISTENERS AND FUNCTIONS */
 
 
-	// Event listener using event delegation
-	container.addEventListener('click', async function (event) {
-		const target = event.target;
+	// Define a function to attach event listeners to buttons
+	function attachEventListenersToButtons() {
+		console.log('called')
+		container.addEventListener('click', async function (event) {
+			console.log('Event:', event);
+			console.log('Target:', event.target);
 
-		if (target && target.matches('.btn')) {
-			if (target.id === 'btnHate') {
-				console.log('btn');
-				updateScore(arrayIndex, -1);
-			}
-			if (target.id === 'btnOkay') {
-				updateScore(arrayIndex, 0);
-			}
-			if (target.id === 'btnLike') {
-				updateScore(arrayIndex, 1);
-			}
-			if (target.id === 'btnLove') {
-				updateScore(arrayIndex, 2);
-			}
-			if (target.id === 'btnReset') {
-				location.reload();
-			}
-		}
-	});
+			const target = event.target;
+
+				if (target.id === 'btnHate') {
+					console.log('btn');
+					updateScore(arrayIndex, -1);
+				}
+				if (target.id === 'btnOkay') {
+					updateScore(arrayIndex, 0);
+				}
+				if (target.id === 'btnLike') {
+					updateScore(arrayIndex, 1);
+				}
+				if (target.id === 'btnLove') {
+					updateScore(arrayIndex, 2);
+				}
+				if (target.id === 'btnReset') {
+					location.reload();
+				}
+			
+		}); 
+	}
+
 
 
 
@@ -320,6 +381,8 @@
 		$('#NextPlayerModal').modal('show')
 	}
 
-
+	function showAboutModal() {
+		$('#AboutModal').modal('show')
+	}
 
 </script>

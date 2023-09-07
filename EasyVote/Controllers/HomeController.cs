@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
+
 
 namespace EasyVote.Controllers
 {
@@ -10,13 +12,17 @@ namespace EasyVote.Controllers
 	{
 		private readonly ILogger<HomeController> _logger;
 		private readonly HttpClient _httpClient;
+		private readonly IConfiguration _configuration;
 
 		private static DataArrayModel globalDataList;
 
-		public HomeController(ILogger<HomeController> logger)
+
+
+		public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
 		{
 			_logger = logger;
 			_httpClient = new HttpClient();
+			_configuration = configuration;
 		}
 
 
@@ -31,47 +37,133 @@ namespace EasyVote.Controllers
 
 		public async Task<IActionResult> SecondPage(string topic, int itemCount)
 		{
-			if (topic == "1")
+			string appData = null;
+
+			var apiKey = _configuration["ApiNinjasApiKey"];
+
+			var httpClient = new HttpClient();
+
+			httpClient.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
+
+			// Switch statement here is used to hit the correct API based on user input and obtain data for the rest of the program.
+			switch (topic)
 			{
-				// we add 1 to the item count because we skip index 0 in the javascript when the vote screen is rendered
-				var response = await _httpClient.GetAsync($"https://meowfacts.herokuapp.com/?count={itemCount}");
-				response.EnsureSuccessStatusCode();
+				case "1":
+					// Manually create a JSON object
+					appData = @"
+					[
+						""TomCat"",
+						""Greaser"",
+						""CrowBar"",
+						""Wooly Mammoth"",
+						""Rics Backyard""
+					]";
 
-				var catFactJson = await response.Content.ReadAsStringAsync();
+					break;
 
-				// Parse the JSON response
-				var catFactObject = JsonSerializer.Deserialize<JsonElement>(catFactJson);
-				var catFactsList = catFactObject.GetProperty("data").EnumerateArray()
-												.Select(item => item.GetString())
-												.ToList();
+				case "2":
 
-				var dataList = new DataArrayModel();
+					string endpoint = $"https://api.api-ninjas.com/v1/babynames?gender=boy";
+					var response = await httpClient.GetAsync(endpoint);
+					response.EnsureSuccessStatusCode();
 
-				// Initialize the DataArray property with the appropriate size
-				dataList.DataArray = new Data[catFactsList.Count];
-
-				for (int i = 0; i < catFactsList.Count; i++)
-				{
-					var catFact = catFactsList[i];
-					var dataObject = new Data
+					if (!response.IsSuccessStatusCode)
 					{
-						ItemData = catFact,
-						ItemScore = 0
-					};
-					dataList.DataArray[i] = dataObject;
-				}
+						return BadRequest("API data retrieval failed");
+					}
 
-				dataList.ArrayIndex = 0;
+					// setting our JSON data to a global variable to be accessed and used below
+					appData = await response.Content.ReadAsStringAsync();
+					break;
 
-				globalDataList = dataList;
+				case "3":
+					// Hitting our cat facts API with an item count value 
+					var response2 = await _httpClient.GetAsync($"https://meowfacts.herokuapp.com/?count={itemCount}");
+					response2.EnsureSuccessStatusCode();
 
+					if (!response2.IsSuccessStatusCode)
+					{
+						return BadRequest("API data retrieval failed");
+					}
 
-				return PartialView("_SecondPage", dataList);
+					// setting our JSON data to a global variable to be accessed and used below
+					appData = await response2.Content.ReadAsStringAsync();
+
+					break;
 			}
-			else
+
+
+			// Parse the JSON response
+			var jsonObject = JsonSerializer.Deserialize<JsonElement>(appData);
+var jsonDataList = JsonSerializer.Deserialize<List<string>>(appData);
+
+
+			// set our data to an new instance of our data array model
+			var dataList = new DataArrayModel();
+
+			// Initialize the DataArray property with the appropriate size
+			dataList.DataArray = new Data[jsonDataList.Count];
+
+			for (int i = 0; i < jsonDataList.Count; i++)
 			{
-				return Error();
+				var singleJsonObject = jsonDataList[i];
+				var dataObject = new Data
+				{
+					ItemData = singleJsonObject,
+					ItemScore = 0
+				};
+				dataList.DataArray[i] = dataObject;
 			}
+
+			dataList.ArrayIndex = 0;
+
+			globalDataList = dataList;
+
+			return PartialView("_SecondPage", dataList);
+
+
+
+
+			//if (topic == "1")
+			//{
+			//	var response = await _httpClient.GetAsync($"https://meowfacts.herokuapp.com/?count={itemCount}");
+			//	response.EnsureSuccessStatusCode();
+
+			//	var jsonDataFromAPI = await response.Content.ReadAsStringAsync();
+
+			//	// Parse the JSON response
+			//	var jsonObject = JsonSerializer.Deserialize<JsonElement>(jsonDataFromAPI);
+			//	var jsonDataList = jsonObject.GetProperty("data").EnumerateArray()
+			//									.Select(item => item.GetString())
+			//									.ToList();
+
+			//	// set our data to an new instance of our data array model
+			//	var dataList = new DataArrayModel();
+
+			//	// Initialize the DataArray property with the appropriate size
+			//	dataList.DataArray = new Data[jsonDataList.Count];
+
+			//	for (int i = 0; i < jsonDataList.Count; i++)
+			//	{
+			//		var singleJsonObject = jsonDataList[i];
+			//		var dataObject = new Data
+			//		{
+			//			ItemData = singleJsonObject,
+			//			ItemScore = 0
+			//		};
+			//		dataList.DataArray[i] = dataObject;
+			//	}
+
+			//	dataList.ArrayIndex = 0;
+
+			//	globalDataList = dataList;
+
+			//	return PartialView("_SecondPage", dataList);
+			//}
+			//else
+			//{
+			//	return Error();
+			//}
 		}
 
 		public IActionResult UpdateScore(int dataIndex, int scoreChange)
@@ -79,16 +171,12 @@ namespace EasyVote.Controllers
 			var updatedData = globalDataList.DataArray[dataIndex];
 			updatedData.ItemScore += scoreChange;
 
-			// Save the index and the score to the session
-			// HttpContext.Session.SetInt32($"ItemScore_{dataIndex}", updatedData.ItemScore);
-
-			Console.WriteLine(globalDataList);
-
 			return Json(updatedData);
 		}
 
 		public IActionResult GetFullList()
 		{
+			// The return statement is for our JS.
 			return Json(globalDataList);
 		}
 
@@ -106,8 +194,22 @@ namespace EasyVote.Controllers
 		}
 
 
+		public IActionResult GetListSize()
+		{
+			return Json(globalDataList.DataArray.Length);
+		}
+
+
 		public IActionResult ResultsPage()
 		{
+			// This block of code is used to retrieve the lesser-voted for items, for populating the bottom of the results page. Not used in our JS.
+			var remainingData = globalDataList.DataArray
+				.OrderByDescending(data => data.ItemScore)
+				.Skip(3)
+				.ToList();
+			ViewBag.RemainingData = remainingData;
+
+
 			return PartialView("_ResultsPage");
 		}
 
