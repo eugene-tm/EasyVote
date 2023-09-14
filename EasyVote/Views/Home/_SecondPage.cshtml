@@ -13,23 +13,21 @@
 		</h3>
 	</div>
 
-	<div class="w-25 mt-3 text-center" id="catFactContainer" style="font-size: 40px; font-style: italic; font-weight: bold">
+	<div class="w-100 mt-3 text-center" id="catFactContainer" style="font-size: 40px; font-style: italic; font-weight: bold">
 		@Model.DataArray[Model.ArrayIndex].ItemData
 	</div>
 
 
 	<div class="w-40 mt-5">
-		<button id="btnLove" class="m-1" data-index="@arrayIndex" data-vote="love">I Love It</button>
-		<button id="btnLike" class="m-1" data-index="@arrayIndex" data-vote="like">I Like It</button>
-		<button id="btnOkay" class="m-1" data-index="@arrayIndex" data-vote="okay">It's Okay</button>
-		<button id="btnHate" class="m-1" data-index="@arrayIndex" data-vote="hate">I Hate It</button>
+		<button id="btnLove" class="m-1" data-vote="love">I Love It</button>
+		<button id="btnLike" class="m-1" data-vote="like">I Like It</button>
+		<button id="btnOkay" class="m-1" data-vote="okay">It's Okay</button>
+		<button id="btnHate" class="m-1" data-vote="hate">Pass</button>
 
 	</div>
 
-	<br />
-
 	<div>
-		<button id="btnReset" class="mt-5 btn-outline-light">Back To Start</button>
+		<button id="btnReset" class="mt-3 btn-outline-light" style="min-width: 200px !important; min-height: 30px !important; font-size: 16px !important;">Back To Start</button>
 	</div>
 
 </div>

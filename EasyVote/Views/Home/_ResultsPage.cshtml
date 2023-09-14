@@ -1,60 +1,80 @@
 ﻿@{
-	List<Data> remainingDataArray = ViewBag.RemainingData;
+    List<Data> remainingDataArray = ViewBag.RemainingData;
 }
 
-
 <div class="d-flex flex-column align-items-center">
+    <h3> Results</h3>
 
+    <!-- Best Result Card -->
+    <div class="container">
+        <div class="row">
+            <div class="col-12 justify-content-center">
+                <div class="card m-3 shadow">
+                    <div class="card-header" style="background: white">
+                        <b>Best Result</b>
+                    </div>
+                    <div id="firstResultContainer" class="m-3 d-flex align-text-center justify-content-center">
+                        x
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<h3> Results</h3>
+    <!-- Runner Up Card -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-11">
+                <div class="card m-3 shadow">
+                    <div class="card-header" style="background: white">
+                        <b>Runner Up</b>
+                    </div>
+                    <div id="secondResultContainer" class="m-3 d-flex align-text-center justify-content-center">
+                        x
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<div class="card m-3 shadow" style="width: 50rem;">
-		<div class="card-header" style="background: white">
-			<b>Best Result</b>
-		</div>
-		<div id="firstResultContainer" class="m-3 d-flex align-text-center justify-content-center">
-			x
-		</div>
-	</div>
+    <!-- Third Card -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-10">
+                <div class="card m-3 shadow">
+                    <div class="card-header" style="background: white">
+                        <b>Third</b>
+                    </div>
+                    <div id="thirdResultContainer" class="m-3 d-flex align-text-center justify-content-center">
+                        x
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<div class="card m-3 shadow" style="width: 45rem;">
-		<div class="card-header" style="background: white">
-			<b>Runner Up</b>
-		</div>
-		<div id="secondResultContainer" class="m-3 d-flex align-text-center justify-content-center">
-			x
-		</div>
-	</div>
+    <!-- Other Results Card -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-9">
+                <div class="card m-3 shadow">
+                    <div class="card-header" style="background: white">
+                        <b>Other results - in descending order of popularity</b>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in remainingDataArray)
+                        {
+                            <li class="list-group-item d-flex align-text-center justify-content-center">@item.ItemData</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <br />
 
-	<div class="card m-3 shadow" style="width: 40rem;">
-		<div class="card-header" style="background: white">
-			<b>Third</b>
-		</div>
-		<div id="thirdResultContainer" class="m-3 d-flex align-text-center justify-content-center">
-			x
-		</div>
-	</div>
-
-
-	<div class="card m-3 shadow" style="width: 35rem;">
-		<div class="card-header" style="background: white">
-			<b>Other results - in descending order of popularity</b>
-		</div>
-		<ul class="list-group list-group-flush">
-			@foreach (var item in remainingDataArray)
-			{
-				<li class="list-group-item">@item.ItemData</li>
-			}
-		</ul>
-	</div>
-
-	<br />
-
-	<div>
-		<button id="btnReset" class="mt-5 btn btn-outline-light">Back To Start</button>
-	</div>
-
+    <div>
+        <button id="btnReset" class="mt-5 btn-outline-light">Back To Start</button>
+    </div>
 </div>
-
-

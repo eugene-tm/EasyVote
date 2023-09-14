@@ -1,42 +1,38 @@
-﻿<div class="d-flex flex-column align-items-center">
+﻿<div class="container">
+    <div class="d-flex flex-column align-items-center">
 
-	<div class="w-25">
-		<select id="selectTopic" class="form-select" aria-label="Default select example">
-			<option value="1">Brisbane Bars</option>
-			<option value="2">Baby Names</option>
-			<option value="3">Cat Facts (not working)</option>
-			<!-- Add other options as needed -->
-		</select>
-	</div>
+        <div class="col-12 col-md-3">
+            <select id="selectTopic" class="form-select" aria-label="Default select example">
+                <option value="1">Brisbane Bars (Local)</option>
+                <option value="2">Masculine Baby Names (API)</option>
+                <option value="3">Feminine Baby Names (API)</option>
+                <option value="4">Neutral Baby Names (API)</option>
+                <option value="5">Cat Facts (API not working)</option>
+                <!-- Add other options as needed -->
+            </select>
+        </div>
 
+        <div class="col-12 col-md-3 mt-5">
+            <label for="customRange1" class="form-label">How many people are voting?</label>
+            <input type="range" class="form-range" min="2" max="8" id="customRange1">
+            <span id="sliderValue1" class="d-flex flex-column align-items-center">2</span>
+        </div>
 
+        <div class="col-12 col-md-3 mt-5">
+            <label for="customRange2" class="form-label">How many options would you like?</label>
+            <input type="range" class="form-range" min="5" max="30" id="customRange2">
+            <span id="sliderValue2" class="d-flex flex-column align-items-center">5</span>
+        </div>
 
-	<div class="w-25 mt-5">
-		<label for="customRange1" class="form-label">How many people are voting?</label>
-		<input type="range" class="form-range" min="2" max="8" id="customRange1">
-		<span id="sliderValue1" class="d-flex flex-column align-items-center">2</span>
-	</div>
+        <div class="col-12 col-md-3 mt-md-5 mt-4 d-flex justify-content-center">
+            <button type="button" class="btn-outline-light" id="btnStart"><b>Get Started</b></button>
+        </div>
 
+        <br />
 
-	<div class="w-25 mt-5">
-		<label for="customRange2" class="form-label">How many cat facts are we using?</label>
-		<input type="range" class="form-range" min="5" max="30" id="customRange2">
-		<span id="sliderValue2" class="d-flex flex-column align-items-center">5</span>
-	</div>
+        <button id="btnAbout" class="mt-3" style="background: darkgrey !important; min-width: 100px !important; min-height: 1px !important; font-size: 16px !important;">About</button>
 
-	<div class="mt-5">
-		<button type="button" class="btn-outline-light" id="btnStart"><b>Get Started</b></button>
-	</div>
-
-	<br />
-
-	<button id="btnAbout" class="mt-3" style="background: darkgrey !important; min-width: 100px !important; min-height: 1px !important; font-size: 16px !important;">About</button>
-
-
+    </div>
 </div>
-
-
-
-
 
 
